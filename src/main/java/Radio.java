@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Radio {
 
-    private MusicPlayer musicPlayer;
-    private List<Channel> channels;
+    private final MusicPlayer musicPlayer;
+    private final List<Channel> channels;
     private int currentCannel = 0;
     private Song currentSong = null;
 
@@ -15,9 +15,11 @@ public class Radio {
             channels.add(new Channel(channelName, channelFiles.get(channelName)));
         }
 
+        musicPlayer = new MusicPlayer();
     }
 
-    static void main(String[] args) throws InterruptedException {
+    @SuppressWarnings("unused") //args is not used
+    static void main(String... args) {
         Radio radio = new Radio();
         radio.startRadio();
     }
