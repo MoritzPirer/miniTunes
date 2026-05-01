@@ -26,16 +26,20 @@ public class Radio {
 
     private void startRadio() {
 
+        // TODO create Display
         nextSong();
+
 
         boolean running = true;
         char input;
         while (running) {
+            // TODO set Display Values
             System.out.println("Artist: " + currentSong.artist);
             System.out.println("Title: " + currentSong.title);
             System.out.println("Duration: " + musicPlayer.getTotalTime());
             System.out.println("Elapsed: " + musicPlayer.getElapsedTime());
 
+            // TODO Fetch & Process input
             Scanner scanner = new Scanner(System.in);
             input = scanner.next().charAt(0);
 
@@ -77,6 +81,8 @@ public class Radio {
                 }
             }
         }
+
+        // TODO destroy Screen
     }
 
     private void nextSong() {

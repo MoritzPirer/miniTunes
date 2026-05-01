@@ -70,6 +70,7 @@ public class FileLoader {
             subfolderContents.add(file.getAbsolutePath());
         }
 
+        subfolderContents.sort(String::compareTo);
         return subfolderContents;
     }
 }

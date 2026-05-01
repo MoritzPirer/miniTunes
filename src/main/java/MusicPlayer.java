@@ -20,7 +20,7 @@ public class MusicPlayer extends PlaybackListener {
      * @param song the song to play
      */
     public void play(Song song) {
-        if (song != null) { // stop any currently running song
+        if (song != null) {
             stop();
         }
 
@@ -133,7 +133,7 @@ public class MusicPlayer extends PlaybackListener {
 
     private String formatTime(long totalSeconds) {
         int hours = (int) (totalSeconds / 3600);
-        int minutes = (int) (totalSeconds / 60);
+        int minutes = (int) (totalSeconds / 60) % 60;
         int seconds = (int) (totalSeconds % 60);
 
         if (hours > 0) {
