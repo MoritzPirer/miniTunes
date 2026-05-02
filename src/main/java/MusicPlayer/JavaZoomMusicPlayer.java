@@ -1,11 +1,13 @@
+package MusicPlayer;
+
 import javazoom.jl.player.advanced.AdvancedPlayer;
 import javazoom.jl.player.advanced.PlaybackEvent;
 import javazoom.jl.player.advanced.PlaybackListener;
 
 import java.io.FileInputStream;
 
-public class MusicPlayer extends PlaybackListener {
-    public enum PlayerState { RUNNING, PAUSED, FINISHED };
+public class JavaZoomMusicPlayer extends PlaybackListener implements MusicPlayer{
+    public enum PlayerState { RUNNING, PAUSED, FINISHED }
     private volatile PlayerState state = PlayerState.RUNNING;
 
     private AdvancedPlayer player = null;
@@ -13,12 +15,9 @@ public class MusicPlayer extends PlaybackListener {
     private long lastStartTime = 0;
     private long totalTimeMillis = 0;
 
-    MusicPlayer() {}
+    public JavaZoomMusicPlayer() {}
 
-    /**
-     * start playing the given song
-     * @param song the song to play
-     */
+    @Override
     public void play(Song song) {
         if (song != null) {
             stop();
@@ -33,35 +32,9 @@ public class MusicPlayer extends PlaybackListener {
     }
 
     /**
-     * if currently playing a song, the song is paused. If currently paused, the song is resumed
-     */
-    public void togglePause() {
-        if (state == PlayerState.PAUSED) {
-            resume();
-        }
-        else if (state == PlayerState.RUNNING) {
-            pause();
-        }
-    }
-
-    public void pause() {
-        if (state == PlayerState.RUNNING && player != null) {
-            state = PlayerState.PAUSED;
-            player.stop(); // triggers playbackFinished()
-        }
-    }
-
-    public void resume() {
-        if (state == PlayerState.PAUSED && player != null) {
-            startThread();
-        }
-    }
-
-    /**
      * start a background thread to run the AdvancedPlayer
      */
     private void startThread() {
-        System.out.println("starting or resuming play of: " + song.filePath);
         state = PlayerState.RUNNING;
         lastStartTime = System.currentTimeMillis();
 
@@ -84,10 +57,40 @@ public class MusicPlayer extends PlaybackListener {
         }).start();
     }
 
+    @Override
+    public void togglePause() {
+        if (state == PlayerState.PAUSED) {
+            resume();
+        }
+        else if (state == PlayerState.RUNNING) {
+            pause();
+        }
+    }
 
-    /**
-     * stops playback and resets the MusicPlayer
-     */
+    private void pause() {
+        if (state == PlayerState.RUNNING && player != null) {
+            state = PlayerState.PAUSED;
+            player.stop(); // triggers playbackFinished()
+        }
+    }
+
+    private void resume() {
+        if (state == PlayerState.PAUSED && player != null) {
+            startThread();
+        }
+    }
+
+    @Override
+    public boolean isPaused() {
+        return state == PlayerState.PAUSED;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return state == PlayerState.FINISHED;
+    }
+
+    @Override
     public void stop() {
         state = PlayerState.FINISHED;
         if (player != null) {
@@ -98,9 +101,6 @@ public class MusicPlayer extends PlaybackListener {
         this.song = null;
     }
 
-    public boolean isFinished() {
-        return state == PlayerState.FINISHED;
-    }
 
     /**
      * called by AdvancedPlayer when playback ends or is interrupted
@@ -112,33 +112,13 @@ public class MusicPlayer extends PlaybackListener {
         }
     }
 
-    /**
-     * @return the already elapsed time of the current song formatted as H:MM:SS or MM:SS
-     */
-    public String getElapsedTime() {
+    @Override
+    public int getElapsedSeconds() {
         long currentElapsed = totalTimeMillis;
         if (state == PlayerState.RUNNING) {
             currentElapsed += (System.currentTimeMillis() - lastStartTime);
         }
 
-        return formatTime(currentElapsed / 1000);
-    }
-
-    /**
-     * @return the total duration of the current song formatted as H:MM:SS or MM:SS
-     */
-    public String getTotalTime() {
-        return formatTime(song.totalSeconds);
-    }
-
-    private String formatTime(long totalSeconds) {
-        int hours = (int) (totalSeconds / 3600);
-        int minutes = (int) (totalSeconds / 60) % 60;
-        int seconds = (int) (totalSeconds % 60);
-
-        if (hours > 0) {
-           return String.format("%d:%02d:%02d", hours, minutes, seconds);
-        }
-        return String.format("%02d:%02d", minutes, seconds);
+        return (int) currentElapsed / 1000;
     }
 }

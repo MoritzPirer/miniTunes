@@ -1,7 +1,8 @@
+package MusicPlayer;
+
 import com.mpatric.mp3agic.*;
 
 import java.io.File;
-import java.io.IOException;
 
 public class Song
 {
@@ -30,6 +31,10 @@ public class Song
        } catch (Exception _) {}
     }
 
+    /**
+     * Read title and artist from metadata if present
+     * @param mp3File the file to read from
+     */
     private void parseMetadata(Mp3File mp3File) {
        if (mp3File.hasId3v1Tag()) {
            ID3v1 tag = mp3File.getId3v1Tag();

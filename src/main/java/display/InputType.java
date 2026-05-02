@@ -1,3 +1,5 @@
+package display;
+
 public enum InputType {
     RESTART,
     BACK,
