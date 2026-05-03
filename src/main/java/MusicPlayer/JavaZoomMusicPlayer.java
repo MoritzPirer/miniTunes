@@ -5,28 +5,26 @@ import javazoom.jl.player.advanced.PlaybackEvent;
 import javazoom.jl.player.advanced.PlaybackListener;
 
 import java.io.FileInputStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class JavaZoomMusicPlayer extends PlaybackListener implements MusicPlayer{
     public enum PlayerState { RUNNING, PAUSED, FINISHED }
     private volatile PlayerState state = PlayerState.RUNNING;
 
-    private AdvancedPlayer player = null;
-    private Song song = null;
+    private volatile AdvancedPlayer player = null;
+    private volatile Song song = null;
     private long lastStartTime = 0;
     private long totalTimeMillis = 0;
-
-    public JavaZoomMusicPlayer() {}
+    private Thread playbackThread = null;
+    private final AtomicInteger playbackId;
+    public JavaZoomMusicPlayer() {playbackId = new AtomicInteger(0);}
 
     @Override
     public void play(Song song) {
-        if (song != null) {
-            stop();
-        }
-
+        state = PlayerState.RUNNING;
         this.song = song;
         lastStartTime = 0;
         totalTimeMillis = 0;
-        state = PlayerState.RUNNING;
 
         startThread();
     }
@@ -37,8 +35,9 @@ public class JavaZoomMusicPlayer extends PlaybackListener implements MusicPlayer
     private void startThread() {
         state = PlayerState.RUNNING;
         lastStartTime = System.currentTimeMillis();
+        int threadId = playbackId.getAndIncrement();
 
-        new Thread(() -> {
+        playbackThread = new Thread(() -> {
             try (FileInputStream fis = new FileInputStream(song.filePath)) {
                 player = new AdvancedPlayer(fis);
                 player.setPlayBackListener(this);
@@ -47,14 +46,15 @@ public class JavaZoomMusicPlayer extends PlaybackListener implements MusicPlayer
                 player.play(startFrame, Integer.MAX_VALUE);
 
                 // playback ended without interruption
-                if (state != PlayerState.PAUSED) {
+                if (threadId == playbackId.get() && state != PlayerState.PAUSED) {
                     state = PlayerState.FINISHED;
                 }
             }
             catch (Exception _) {
                 state = PlayerState.FINISHED;
             }
-        }).start();
+        });
+        playbackThread.start();
     }
 
     @Override
@@ -71,6 +71,7 @@ public class JavaZoomMusicPlayer extends PlaybackListener implements MusicPlayer
         if (state == PlayerState.RUNNING && player != null) {
             state = PlayerState.PAUSED;
             player.stop(); // triggers playbackFinished()
+            playbackThread.interrupt();
         }
     }
 
@@ -95,6 +96,9 @@ public class JavaZoomMusicPlayer extends PlaybackListener implements MusicPlayer
         state = PlayerState.FINISHED;
         if (player != null) {
             player.close();
+        }
+        if (playbackThread != null && playbackThread.isAlive()) {
+            playbackThread.interrupt();
         }
         this.totalTimeMillis = 0;
         this.lastStartTime = 0;

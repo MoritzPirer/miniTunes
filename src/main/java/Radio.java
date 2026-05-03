@@ -65,12 +65,12 @@ public class Radio {
 
             setDisplay(display);
 
+            InputType input = display.pollInput();
+            processInput(input);
+
             if (musicPlayer.isFinished()) {
                 nextSong();
             }
-
-            InputType input = display.pollInput();
-            processInput(input);
         }
     }
 
@@ -133,6 +133,7 @@ public class Radio {
      * stop the current song and start playing the next one in the current channel
      */
     private void nextSong() {
+        System.out.println("DEBUG: nextSong called");
         musicPlayer.stop();
         String songPath = channels.get(currentCannel).getNext();
         currentSong = new Song(songPath);

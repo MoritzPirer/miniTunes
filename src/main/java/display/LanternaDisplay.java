@@ -167,7 +167,7 @@ public class LanternaDisplay implements Display {
                 return InputType.QUIT;
             }
 
-            return switch (input.getCharacter()) {
+            return switch (Character.toLowerCase(input.getCharacter())) {
                 case 'r' -> InputType.RESTART;
                 case 'b' -> InputType.BACK;
                 case 'p' -> InputType.PLAY_PAUSE;
