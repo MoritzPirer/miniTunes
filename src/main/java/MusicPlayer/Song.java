@@ -28,7 +28,7 @@ public class Song
            this.totalSeconds = (int) mp3File.getLengthInSeconds();
            this.msPerFrame = (1152.0 / mp3File.getSampleRate()) * 1000.0;
            parseMetadata(mp3File);
-       } catch (Exception _) {}
+       } catch (Exception ignored) {}
     }
 
     /**

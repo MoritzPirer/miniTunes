@@ -50,7 +50,7 @@ public class JavaZoomMusicPlayer extends PlaybackListener implements MusicPlayer
                     state = PlayerState.FINISHED;
                 }
             }
-            catch (Exception _) {
+            catch (Exception e) {
                 state = PlayerState.FINISHED;
             }
         });

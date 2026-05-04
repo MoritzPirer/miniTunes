@@ -40,6 +40,7 @@ public class Format {
         return border + padded + border;
     }
 
+
     /**
      * pad text to width by inserting spaces on the left. If text is longer than width, shorten to end with '...'
      * @param text the text to align

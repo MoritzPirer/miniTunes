@@ -80,6 +80,7 @@ public class LanternaDisplay implements Display {
 
     @Override
     public void setChannel(String channel) { this.channel = channel; }
+
     @Override
     public void refresh() throws IOException {
         screen.clear();
@@ -125,7 +126,9 @@ public class LanternaDisplay implements Display {
      * @param width the width of the display
      */
     private void renderContent(TextGraphics textGraphics, int width) {
+
         int line = 1;
+
         textGraphics.putString(1,line++, Format.centerWithBorder(name, width, horizontalBorder, cornerBorder));
         textGraphics.putString(1,line++, Format.centerWithBorder(Format.rightAlign(channel, width - 2), width, ' ', verticalBorder));
 
@@ -133,7 +136,7 @@ public class LanternaDisplay implements Display {
         textGraphics.putString(1,line++, Format.centerWithBorder(artist, width, ' ', verticalBorder));
         textGraphics.putString(1,line++, Format.centerWithBorder(progressBar(width - 2), width, ' ', verticalBorder));
 
-        String symbols =  "↩︎ |<<  " + (isPaused? "▶" : "⏸")+ "  >>|  ⇌";
+        String symbols =  "↲  |<<  " + (isPaused? "▶" : "⏸")+ "  >>|  ⇌";
         String controls = "[R] [B] [P] [S] [C]";
         textGraphics.putString(1,line++, Format.centerWithBorder(symbols, width, ' ', verticalBorder));
         textGraphics.putString(1,line++, Format.centerWithBorder(controls, width, ' ', verticalBorder));

@@ -6,9 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FileLoader {
-    private static final String baseFolder = "src/main/resources"; // TODO: maybe folder outside of project
+public abstract class FileLoader {
+    private static final String baseFolder = System.getProperty("user.home") + File.separator + "miniTunes";
 
+    public static void ensureDirectoryExists() {
+        File folder = new File(baseFolder);
+        if (!folder.exists()) {
+            folder.mkdirs()
+        }
+    }
     /**
      * collects all subfolders of baseFolder along with the .mp3 files in them
      * @return a map where the keys are the names of the subfolders and the values are

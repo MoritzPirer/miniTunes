@@ -8,11 +8,11 @@ import Utils.FileLoader;
 import java.io.IOException;
 import java.util.*;
 
-public class Radio {
+public class miniTunes {
 
     @SuppressWarnings("unused")
-    static void main(String... args) {
-        Radio radio = new Radio();
+    public static void main(String[] args) {
+        miniTunes radio = new miniTunes();
         radio.startRadio();
     }
 
@@ -22,16 +22,21 @@ public class Radio {
     private Song currentSong = null;
     private boolean isRunning = true;
 
-    public Radio() {
+    public miniTunes() {
+        FileLoader.ensureDirectoryExists();
+
         Map<String, List<String>> channelFiles = FileLoader.getSubfolders();
         channels = new ArrayList<>();
 
         for (String channelName : channelFiles.keySet()) {
             try {
                 channels.add(new Channel(channelName, channelFiles.get(channelName)));
-            } catch (InstantiationError _) {} // ensure all channels have at least one song
+            } catch (InstantiationError ignored) {} // ensure all channels have at least one song
         }
 
+        if (channels.isEmpty()) {
+            isRunning = false;
+        }
         musicPlayer = new JavaZoomMusicPlayer();
     }
 
@@ -43,6 +48,11 @@ public class Radio {
 
         try {
             display.init();
+
+            if (!isRunning) {
+                errorLoop(display);
+            }
+
             musicPlayer.stop();
             String songPath = channels.get(currentCannel).getFirst();
             currentSong = new Song(songPath);
@@ -54,6 +64,24 @@ public class Radio {
         } catch (IOException e) {
             processInput(InputType.QUIT);
         }
+    }
+
+    private void errorLoop(Display display) throws IOException {
+        display.setTitle("Add Folders with mp3 files to <home>/MiniTunes");
+        display.setArtist("(press q to close)");
+        display.setTotalTime(0);
+        display.setElapsedTime(0);
+        display.setIsPaused(true);
+        display.setChannel("");
+
+        display.refresh();
+
+        InputType input;
+        do {
+            input = display.pollInput();
+        } while (input != InputType.QUIT);
+
+       processInput(InputType.QUIT);
     }
 
     /**
