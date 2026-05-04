@@ -1,9 +1,9 @@
 import MusicPlayer.JavaZoomMusicPlayer;
 import MusicPlayer.Song;
-import display.Display;
-import display.InputType;
-import display.LanternaDisplay;
-import utils.FileLoader;
+import Display.Display;
+import Display.InputType;
+import Display.LanternaDisplay;
+import Utils.FileLoader;
 
 import java.io.IOException;
 import java.util.*;
@@ -84,6 +84,7 @@ public class Radio {
         display.setTotalTime(currentSong.totalSeconds);
         display.setElapsedTime(musicPlayer.getElapsedSeconds());
         display.setIsPaused(musicPlayer.isPaused());
+        display.setChannel(channels.get(currentCannel).name);
         try {
             display.refresh();
         }
